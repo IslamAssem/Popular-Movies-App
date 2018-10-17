@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">افلامى</string>
+    <string name="title_activity_main">افلامى</string>
+    <string name="action_settings">الضبط</string>
+    <string name="overview">الوصف</string>
+    <string name="Trailer">الفيديوهات</string>
+    <string name="review">اراء</string>
+    <string name="most_popular">الاكثر شعبية</string>
+    <string name="top_rated">الاعلى تقيما</string>
+    <string name="include_adult">عرض افلام +18</string>
+    <string name="movie">فيلم</string>
+    <string name="max_rating">/10</string>
+    <string name="genre">رعب</string>
+    <string name="navigation_drawer_open">فتح القائمة الجانبية</string>
+    <string name="navigation_drawer_close">غلق القائمة الجانبية</string>
+    <string name="openDrawer">فتح القائمة الجانبية</string>
+    <string name="closeDrawer">غلق القائمة الجانبية</string>
+    <string name="bookmark_this_item">اضف كعلامة مرجعية</string>
+    <string name="search">ابحث</string>
+    <string name="searchempty">اكتب ما تريد البحث عنه</string>
+    <string name="cancel">الغاء</string>
+    <string name="artist_name">عادل امام</string>
+    <string name="artist_name_Label">"الاسم : "</string>
+    <string name="upcoming">الافلام القادمة</string>
+    <string name="artist_popularity_Label">الشعبية</string>
+    <string name="artist_adult_Label">اباحى :</string>
+    <string name="retrying_connecting">جار اعادة الاتصال بالانترنت</string>
+    <string name="rating">التقييم</string>
+    <string name="connecting">جار الاتصال</string>
+    <string name="error_connecting">لا يوجد اتصال بالانترنت</string>
+    <string name="artist_popularity">9.9</string>
+    <string name="offline">offline</string>
+    <string name="favourite">المفضلة</string>
+    <string name="retry">اعادة المحاولة</string>
+    <string name="trailers_list_not_loaded">Trailers List not Loaded</string>
+    <string name="reviews_list_not_loaded">Reviews List not loaded</string>
+    <string name="trailers_reviews_loading_error">Trailers and Reviews loading error!</string>
+</resources>

@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">My movies</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_activity_main">My Movies</string>
+    <string name="action_settings">setting</string>
+    <string name="overview">Overview</string>
+    <string name="Trailer">Trailer</string>
+    <string name="review">Reviews</string>
+    <string name="menu_popular" translatable="false">popular</string>
+    <string name="menu_top_rated" translatable="false">top_rated</string>
+    <string name="menu_favourite" translatable="false">favourite</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="favourite">Favourite</string>
+    <string name="include_adult">include adult</string>
+    <string name="contentDescription" translatable="false"> </string>
+    <string name="movie">movie</string>
+    <string name="max_rating">/10</string>
+    <string name="release" translatable="false">10–10–2017 |En</string>
+    <string name="genre">Horror</string>
+    <string name="bookmark_this_item">bookmark this item</string>
+    <string name="search">search</string>
+    <string name="searchempty">input text in search box</string>
+    <string name="cancel">Cancel</string>
+    <string-array name="search_array">
+        <item>All</item>
+        <item>Movies</item>
+        <item>People</item>
+    </string-array>
+    <string name="artist_name">Johnny Messner</string>
+    <string name="artist_name_Label">name :</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="artist_popularity">94.36496589</string>
+    <string name="artist_popularity_Label">popularity :</string>
+    <string name="artist_adult_Label">adult :</string>
+    <string name="error_connecting">no internet connection</string>
+    <string name="retrying_connecting">Retrying Connecting…</string>
+    <string name="connecting">Connecting…</string>
+    <!--Required string by navigation drawer never delete -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="openDrawer">open_drawer</string>
+    <string name="closeDrawer">close_drawer</string>
+    <string name="rating">rating</string>
+
+    <string name="poster_size" translatable="false">w185</string>
+    <string name="backdrop_size" translatable="false">w500</string>
+    <string name="offline">offline</string>
+    <string name="retry">Retry</string>
+    <string name="trailers_list_not_loaded">Trailers List not Loaded</string>
+    <string name="reviews_list_not_loaded">Reviews List not loaded</string>
+    <string name="trailers_reviews_loading_error">Trailers and Reviews loading error!</string>
+</resources>
