@@ -88,9 +88,10 @@
         android:fadingEdge="none"
         android:focusable="true"
         android:src="@drawable/ic_star_normal_24dp"
-        app:layout_anchor="@+id/app_bar"
-        app:layout_anchorGravity="bottom|right|end"
         app:backgroundTint="@color/transparent"
         app:borderWidth="0dp"
-        app:useCompatPadding="true" />
+        app:fabSize="mini"
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="bottom|right|end"
+        app:useCompatPadding="false" />
 </android.support.design.widget.CoordinatorLayout>

@@ -8,11 +8,16 @@ import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "trailes")
 public class Trailer {
 
+	public Trailer() {
+		movie_id=-1;
+	}
     @NonNull
     @PrimaryKey
     @SerializedName("id")
     private String id;
 
+	@SerializedName("movie_id")
+	private int movie_id;
 	@SerializedName("site")
 	private String site;
 
@@ -99,6 +104,13 @@ public class Trailer {
 		return key;
 	}
 
+    public int getMovie_id() {
+        return movie_id;
+    }
+
+    public void setMovie_id(int movie_id) {
+        this.movie_id = movie_id;
+    }
 	@Override
  	public String toString(){
 		return 

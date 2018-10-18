@@ -1,7 +1,6 @@
 package com.eltendawy.mymovies.Activities;
 
 import android.arch.lifecycle.Observer;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -92,7 +91,7 @@ public class MovieDetails extends BaseActivity {
                             @Override
                             public void run() {
                                 isDbBusy=true;
-                                db.movieDao().DeleteMovie(movie);
+                                db.movieDao().Delete(movie);
                             }
                         });
                         fabFavourite.setImageResource(R.drawable.ic_star_normal_24dp);
@@ -100,26 +99,32 @@ public class MovieDetails extends BaseActivity {
                     }catch (Exception ignored)
                     {
                     }
-                else if(reviewStatus==Status.FINISHED&&trailerStatus==Status.FINISHED)
+                else if(reviewStatus!=Status.LOADING&&trailerStatus!=Status.LOADING)
                 try
                 {
+                    movie.setNumerReviews(reviewFragment.totalReviews);
+                    movie.setLastReviewsPage(reviewFragment.getPage());
                     AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
-                            db.movieDao().AddMovie(movie);
+                            db.movieDao().insert(movie);
                             movie.setFavourite(true);
                         }
                     });
                     AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
-                            db.reviewsDao().AddReviews(reviewFragment.getReviews());
+                            for(int i=0;i<reviewFragment.getReviews().size();i++)
+                                reviewFragment.getReviews().get(i).setMovie_id(movie.getId());
+                            db.reviewsDao().insert(reviewFragment.getReviews());
                         }
                     });
                     AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
-                            db.trailersDao().AddTrailers(trailersFragment.getTrailers());
+                            for(int i=0;i<trailersFragment.getTrailers().size();i++)
+                                trailersFragment.getTrailers().get(i).setMovie_id(movie.getId());
+                            db.trailersDao().insert(trailersFragment.getTrailers());
                         }
                     });
                     fabFavourite.setImageResource(R.drawable.ic_star_favorite_24dp);
@@ -167,6 +172,7 @@ public class MovieDetails extends BaseActivity {
         overviewFragment = new Overview().setMovie(movie);
         reviewFragment = new Review().setParentActivity(this).setMovie(movie);
         trailersFragment = new Trailer().setParentActivity(this).setMovie(movie);
+
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(movie.getTitle());
 
@@ -177,10 +183,28 @@ public class MovieDetails extends BaseActivity {
         adapter.add(reviewFragment, reviewFragment.toString());
         adapter.add(trailersFragment, trailersFragment.toString());
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(2);
+        //viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         title.setText(movie.getTitle());
         genre.setText(movie.getGenres());
-        rating.setText(String.valueOf(movie.getVoteAverage()));
+        rating.setText(String.valueOf(movie.getVoteAverage()).concat("/10"));
         release.setText(movie.getReleaseDate().concat("|").concat(movie.getOriginalLanguage()));
         if (movie.getPosterPath() == null || movie.getPosterPath().equals("") || movie.getPosterPath().equals("null"))
             movie.setPosterPath("");
@@ -195,30 +219,28 @@ public class MovieDetails extends BaseActivity {
         //todo simpleviewpager
     }
 
-    public void showSnackbar(EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener, final Status status) {
+    public void showSnackbar(EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener) {
         //if(Constants.current_type.equals(Constants.Fav))return;
         //if current movies are fav no need to reload
-        resetState(endlessRecyclerViewScrollListener, status);
-        if (MovieDetails.status == Status.ERROR)
-            return;
-        MovieDetails.status = Status.ERROR;
+        resetState(endlessRecyclerViewScrollListener);
+        status = Status.ERROR;
         snackbar = Snackbar
                 .make(parent, R.string.error_connecting, Snackbar.LENGTH_INDEFINITE)
                 .setAction(getResources().getString(R.string.retry), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        showSnackbarLoading(R.string.connecting, parent);
+                        showSnackbarLoading(R.string.retrying_connecting, parent);
                         reviewFragment.fetchReviews();
                         trailersFragment.fetchTrailers();
-                        MovieDetails.status = Status.LOADING;
+                        status = Status.LOADING;
                     }
                 });
         // Changing message text color
-        snackbar.setActionTextColor(Color.BLUE);
+        snackbar.setActionTextColor(getResources().getColor(R.color.white));
         // Changing action button text color
         View sbView = snackbar.getView();
         TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
+        textView.setTextColor(getResources().getColor(R.color.error));
         snackbar.show();
     }
 

@@ -9,10 +9,6 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface Services {
-
-    @GET("radio/radio_{language}.json")
-    Call<Object> getModels(@Path("language") String language, @Query("key") String valu);
-
     @GET("3/discover/movie")
     Call<MoviesResponse>getMoviesList(@Query("api_key") String apiKey, @Query("sort_by") String sortBy,
                                       @Query("page") int page,@Query("include_adult") boolean includeAdult);
@@ -21,4 +17,9 @@ public interface Services {
                                        @Query("page") int page);
     @GET("3/movie/{movie_id}/videos")
     Call<TrailersResponse>getTrailersList(@Path("movie_id") int moview_id, @Query("api_key") String apiKey);
+
+
+    @GET("3/search/movie")
+    Call<MoviesResponse> searchmovie(@Query("api_key") String apiKey, @Query("query") String keyword, @Query("page") int page,
+                             @Query("include_adult") boolean includeAdult);
 }

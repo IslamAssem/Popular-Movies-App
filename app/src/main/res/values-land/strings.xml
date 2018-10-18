@@ -1,4 +1,4 @@
 <resources>
-    <string name="poster_size">w185</string>
-    <string name="backdrop_size">w500</string>
+    <string name="poster_size" translatable="false">w185</string>
+    <string name="backdrop_size" translatable="false">w500</string>
 </resources>

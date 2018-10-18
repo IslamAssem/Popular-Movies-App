@@ -13,14 +13,16 @@ import com.eltendawy.mymovies.Fragments.Overview;
 
 import java.util.ArrayList;
 //import com.android.internal.
+
 /**
  * Created by Islam on 10-Oct-17.
  */
 
-public class SimpleFragmentPagerAdapter  extends FragmentPagerAdapter {
-    private ArrayList<Fragment>fragments;
-    private ArrayList<String>titles;
+public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
+    private ArrayList<Fragment> fragments;
+    private ArrayList<String> titles;
     Movie movie;
+
     public SimpleFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -30,21 +32,20 @@ public class SimpleFragmentPagerAdapter  extends FragmentPagerAdapter {
         return this;
     }
 
-    public  void add(Fragment fragment, String title)
-    {
-        if(fragments==null||titles==null)
-        {
-            fragments=new ArrayList<>();
-            titles=new ArrayList<>();
+    public void add(Fragment fragment, String title) {
+        if (fragments == null || titles == null) {
+            fragments = new ArrayList<>();
+            titles = new ArrayList<>();
         }
         fragments.add(fragment);
         titles.add(title);
 
     }
+
     // This determines the fragment for each tab
     @Override
     public Fragment getItem(int position) {
-        BaseFragment fragment=(BaseFragment) fragments.get(position);
+        BaseFragment fragment = (BaseFragment) fragments.get(position);
         return fragment;
 
 //        }
@@ -59,9 +60,10 @@ public class SimpleFragmentPagerAdapter  extends FragmentPagerAdapter {
     // This determines the title for each tab
     @Override
     public String getPageTitle(int position) {
-        return  titles.get(position);
-        }
+        return titles.get(position);
     }
+
+}
 
 
 

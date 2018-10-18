@@ -24,16 +24,18 @@
     <string name="artist_name_Label">"الاسم : "</string>
     <string name="upcoming">الافلام القادمة</string>
     <string name="artist_popularity_Label">الشعبية</string>
-    <string name="artist_adult_Label">اباحى :</string>
+    <string name="artist_adult_Label">للبالغين :</string>
     <string name="retrying_connecting">جار اعادة الاتصال بالانترنت</string>
     <string name="rating">التقييم</string>
     <string name="connecting">جار الاتصال</string>
     <string name="error_connecting">لا يوجد اتصال بالانترنت</string>
     <string name="artist_popularity">9.9</string>
-    <string name="offline">offline</string>
+    <string name="offline">بدون اتصال</string>
     <string name="favourite">المفضلة</string>
     <string name="retry">اعادة المحاولة</string>
-    <string name="trailers_list_not_loaded">Trailers List not Loaded</string>
-    <string name="reviews_list_not_loaded">Reviews List not loaded</string>
-    <string name="trailers_reviews_loading_error">Trailers and Reviews loading error!</string>
+    <string name="trailers_list_not_loaded">الرجاء انتظر تحميل قائمة الفيديوهات</string>
+    <string name="reviews_list_not_loaded">الرجاء انتظر تحميل قائمة الاراء</string>
+    <string name="trailers_reviews_loading_error">الرجاء انتظر تحميل قائمة الفيديوهات و الاراء</string>
+    <string name="reading_database">جار القراءة من قاعدة البيانات</string>
+    <string name="ok">موافق</string>
 </resources>

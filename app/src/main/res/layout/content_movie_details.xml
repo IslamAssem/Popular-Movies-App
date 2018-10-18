@@ -11,15 +11,15 @@
     <ImageView
         android:id="@+id/movie_img"
         android:layout_width="0dp"
-        android:layout_height="184dp"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/contentDescription"
-        android:minHeight="185dp"
+        android:minHeight="@dimen/movies_card_minimum_size"
         android:scaleType="fitXY"
-        android:tint="@color/test"
+        android:tint="@color/img_tint"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@mipmap/ic_launcher" />
 
     <TextView
@@ -27,59 +27,54 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="monospace"
         android:gravity="center"
         android:text="@string/movie"
-        android:textColor="@color/text_color_highlighted"
-        android:textSize="@dimen/textSize_largex"
+        android:textColor="@color/maroon_blue"
+        android:textSize="24sp"
         android:textStyle="italic"
-        app:layout_constraintBottom_toBottomOf="@+id/movie_img"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/movie_img" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/rating"
+    <TextView
+        android:id="@+id/movie_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSize_largex"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/release_genre"
-        app:layout_constraintTop_toBottomOf="@+id/movie_title">
-
-        <TextView
-            android:id="@+id/movie_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/max_rating"
-            android:textColor="@color/white"
-            android:textSize="@dimen/textSize_largex"
-            android:textStyle="bold|italic"
-            tools:text="9" />
-
-        <TextView
-            android:id="@+id/max_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/max_rating"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_medium" />
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/movie_title"
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="9" />
 
     <LinearLayout
         android:id="@+id/release_genre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="12dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@+id/rating"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/movie_rating"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/movie_title">
+        app:layout_constraintTop_toBottomOf="@+id/movie_title"
+        app:layout_constraintVertical_bias="1.0">
 
         <TextView
             android:id="@+id/movie_release"

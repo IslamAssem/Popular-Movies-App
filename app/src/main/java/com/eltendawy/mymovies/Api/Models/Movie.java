@@ -19,7 +19,17 @@ public class Movie implements Parcelable {
 
 	public Movie() {
 	    favourite=false;
+		numerReviews =0;
+		lastReviewsPage=1;
 	}
+
+	@SerializedName("numerReviews")
+
+	private int numerReviews;
+
+	@SerializedName("lastReviewsPage")
+
+	private int lastReviewsPage;
 
 	@PrimaryKey
 	@SerializedName("id")
@@ -82,6 +92,8 @@ public class Movie implements Parcelable {
         voteAverage = in.readDouble();
         popularity = in.readDouble();
         id = in.readInt();
+        numerReviews =in.readInt();
+		lastReviewsPage =in.readInt();
         adult = in.readByte() != 0;
         voteCount = in.readInt();
         genreIds=new ArrayList<>();
@@ -241,7 +253,24 @@ public class Movie implements Parcelable {
         return genresString;
 
     }
-    @NonNull
+
+	public int getNumerReviews() {
+		return numerReviews;
+	}
+
+	public void setNumerReviews(int numerReviews) {
+		this.numerReviews = numerReviews;
+	}
+
+	public int getLastReviewsPage() {
+		return lastReviewsPage;
+	}
+
+	public void setLastReviewsPage(int lastReviewsPage) {
+		this.lastReviewsPage = lastReviewsPage;
+	}
+
+	@NonNull
     @Override
  	public String toString(){
 		return title;
@@ -264,7 +293,9 @@ public class Movie implements Parcelable {
         dest.writeString(releaseDate);
         dest.writeDouble(voteAverage);
         dest.writeDouble(popularity);
-        dest.writeInt(id);
+		dest.writeInt(id);
+		dest.writeInt(numerReviews);
+		dest.writeInt(lastReviewsPage);
         dest.writeByte((byte) (adult ? 1 : 0));
         dest.writeInt(voteCount);
         dest.writeList(genreIds);

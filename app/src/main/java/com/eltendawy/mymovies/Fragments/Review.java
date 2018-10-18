@@ -1,8 +1,10 @@
 package com.eltendawy.mymovies.Fragments;
 
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,13 +16,16 @@ import com.eltendawy.mymovies.Activities.MovieDetails;
 import com.eltendawy.mymovies.Adapters.EndlessRecyclerViewScrollListener;
 import com.eltendawy.mymovies.Adapters.ReviewsRecyclerAdapter;
 import com.eltendawy.mymovies.Api.APIManager;
+import com.eltendawy.mymovies.Api.Configuration;
 import com.eltendawy.mymovies.Api.Models.Movie;
 import com.eltendawy.mymovies.Api.Models.ReviewsResponse;
 import com.eltendawy.mymovies.Base.BaseFragment;
 import com.eltendawy.mymovies.Base.Status;
+import com.eltendawy.mymovies.Database.MoviesDatabase;
 import com.eltendawy.mymovies.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,12 +50,23 @@ public class Review extends BaseFragment {
     int page;
     MovieDetails parentActivity;
     Status status;
+    public int totalReviews;
     EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
+    boolean tryOnline;
     public Review() {
         page = 1;
         status=IDLE;
+        tryOnline=false;
+        totalReviews=0;
     }
 
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -63,6 +79,7 @@ public class Review extends BaseFragment {
 
     public Review setMovie(Movie movie) {
         this.movie = movie;
+        page=movie.getLastReviewsPage();
         return this;
     }
 
@@ -90,10 +107,50 @@ public class Review extends BaseFragment {
     }
 
     public void fetchReviews() {
-        if(status==FINISHED||status==LOADING)
-            return;
+        switch (status)
+        {
+            case FINISHED: {
+                parentActivity.setReviewStatus(status);
+                return;
+            }
+            case LOADING: {
+                return;
+            }
+            case ERROR:{
+                parentActivity.showSnackbarLoading(R.string.retrying_connecting,parentActivity.getView());
+                break;
+            }
+            case IDLE:{
+                if(parentActivity.getSort().equals(Configuration.Favourite))
+                {
+                    if(tryOnline)
+                        break;
+                    MoviesDatabase.getInstance(parentActivity.getApplicationContext()).reviewsDao().
+                            getReviewsByMovieId(movie.getId()).observe(this, new Observer<List<com.eltendawy.mymovies.Api.Models.Review>>() {
+                        @Override
+                        public void onChanged(@Nullable List<com.eltendawy.mymovies.Api.Models.Review> reviews) {
+                            tryOnline=true;
+                            adapter.addReviews(reviews);
+                            parentActivity.hideSnackbar();
+                            if(adapter.getItemCount()<movie.getNumerReviews())
+                            {
+                                page=movie.getLastReviewsPage();
+                                status=IDLE;
+                                fetchReviews();
+                            }
+                            else status=FINISHED;
+                        }
+                    });
+                    parentActivity.showSnackbarLoading(R.string.reading_database,parentActivity.getView());
+                    status=LOADING;
+                    return;
+                }
+                parentActivity.showSnackbarLoading(R.string.connecting,parentActivity.getView());
+                break;
+            }
+        }
         status=LOADING;
-        parentActivity.showSnackbarLoading(R.string.connecting,parentActivity.getView());
+
         APIManager.getAPIS().getReviewsList(movie.getId(), APIManager.APIKEY, page++).enqueue(new Callback<ReviewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<ReviewsResponse> call, @NonNull Response<ReviewsResponse> response) {
@@ -102,21 +159,23 @@ public class Review extends BaseFragment {
                     parentActivity.hideSnackbar();
                     if(response.body() != null) {
                         adapter.addReviews(response.body().getResults());
+                        totalReviews=response.body().getTotalResults();
                         if(response.body().getTotalPages()<page)
                         {
                             status=FINISHED;
                             parentActivity.setReviewStatus(status);
                         }
                     }
-                } catch (Exception ignored) {
-                    parentActivity.showSnackbar(endlessRecyclerViewScrollListener,status);
+                } catch (Exception e) {
+                    status=ERROR;
+                    parentActivity.showSnackbar(endlessRecyclerViewScrollListener);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ReviewsResponse> call, @NonNull Throwable t) {
-//todo handle failer  show refresh snackbar
-                parentActivity.showSnackbar(endlessRecyclerViewScrollListener,status);
+                status=ERROR;
+                parentActivity.showSnackbar(endlessRecyclerViewScrollListener);
             }
         });
     }

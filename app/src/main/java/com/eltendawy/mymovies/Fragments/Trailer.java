@@ -1,8 +1,11 @@
 package com.eltendawy.mymovies.Fragments;
 
 
+import android.arch.lifecycle.Observer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,22 +14,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.eltendawy.mymovies.Activities.MovieDetails;
-import com.eltendawy.mymovies.Adapters.EndlessRecyclerViewScrollListener;
 import com.eltendawy.mymovies.Adapters.TrailersRecyclerAdapter;
 import com.eltendawy.mymovies.Api.APIManager;
+import com.eltendawy.mymovies.Api.Configuration;
 import com.eltendawy.mymovies.Api.Models.Movie;
-import com.eltendawy.mymovies.Api.Models.Review;
 import com.eltendawy.mymovies.Api.Models.TrailersResponse;
 import com.eltendawy.mymovies.Base.BaseFragment;
 import com.eltendawy.mymovies.Base.Status;
+import com.eltendawy.mymovies.Database.MoviesDatabase;
 import com.eltendawy.mymovies.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.eltendawy.mymovies.Base.Status.ERROR;
 import static com.eltendawy.mymovies.Base.Status.FINISHED;
 import static com.eltendawy.mymovies.Base.Status.IDLE;
 import static com.eltendawy.mymovies.Base.Status.LOADING;
@@ -44,7 +49,9 @@ public class Trailer extends BaseFragment {
     LinearLayoutManager manager;
     MovieDetails parentActivity;
     Status status;
+    boolean tryOnline;
     public Trailer() {
+        tryOnline=false;
     }
 
 
@@ -79,14 +86,47 @@ public class Trailer extends BaseFragment {
         fetchTrailers();
     }
     public void fetchTrailers() {
-        if(status==LOADING||status==FINISHED)
-            return;
+        switch (status)
+        {
+            case FINISHED: {
+                parentActivity.setTrailerStatus(status);
+                return;
+            }
+            case LOADING: {
+                return;
+            }
+            case ERROR:{
+                parentActivity.showSnackbarLoading(R.string.retrying_connecting,parentActivity.getView());
+                break;
+            }
+            case IDLE:{
+                if(parentActivity.getSort().equals(Configuration.Favourite))
+                {
+                    if(tryOnline)
+                        break;
+                    MoviesDatabase.getInstance(parentActivity.getApplicationContext()).trailersDao().
+                            getTrailersByMovieId(movie.getId()).observe(this, new Observer<List<com.eltendawy.mymovies.Api.Models.Trailer>>() {
+                        @Override
+                        public void onChanged(@Nullable List<com.eltendawy.mymovies.Api.Models.Trailer> trailers) {
+                            tryOnline=true;
+                            adapter.addTrailers(trailers);
+                            parentActivity.hideSnackbar();
+                            status=FINISHED;
+                            fetchTrailers();
+                        }
+                    });
+                    parentActivity.showSnackbarLoading(R.string.reading_database,parentActivity.getView());
+                    status=LOADING;
+                    return;
+                }
+                parentActivity.showSnackbarLoading(R.string.connecting,parentActivity.getView());
+                break;
+            }
+        }
         status=LOADING;
-        parentActivity.showSnackbarLoading(R.string.connecting,parentActivity.getView());
         APIManager.getAPIS().getTrailersList(movie.getId(),APIManager.APIKEY).enqueue(new Callback<TrailersResponse>() {
             @Override
             public void onResponse(@NonNull Call<TrailersResponse> call, @NonNull Response<TrailersResponse> response) {
-                status=IDLE;
                 try {
                     parentActivity.hideSnackbar();
                     if (response.body() != null) {
@@ -97,16 +137,17 @@ public class Trailer extends BaseFragment {
                             parentActivity.setTrailerStatus(status);
                         }
                     }
-                }catch (Exception ignored)
+                }catch (Exception e)
                 {
-                    parentActivity.showSnackbar(null,status);
+                    status=ERROR;
+                    parentActivity.showSnackbar(null);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<TrailersResponse> call, @NonNull Throwable t) {
-//todo handle failer  show refresh snackbar
-                parentActivity.showSnackbar(null,status);
+                status=ERROR;
+                parentActivity.showSnackbar(null);
             }
         });
     }

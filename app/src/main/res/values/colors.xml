@@ -11,17 +11,18 @@
     <color name="card_light_background">#ffffff</color>
     <color name="text_color_highlighted">#7171e0</color>
     <color name="gray_light">#ffd0d0d0</color>
-    <color name="imgTint">#021d8dee</color>
+    <color name="img_tint">#64000000</color>
     <color name="grey">#ff4c4c4c</color>
     <color name="black">#000000</color>
     <color name="dark_blue1">#151e29</color>
     <color name="dark_blue2">#ff1b2737</color>
-    <color name="maroon_blue">#ff0cd7de</color>
+    <color name="maroon_blue">#0cd7de</color>
     <color name="movie_rating_color">#ff8a8a8a</color>
     <color name="movie_title_color">#ff73a7ee</color>
     <color name="twitter_blue">#ff1d8dee</color>
-    <color name="white">#ffffffff</color>
+    <color name="white">#ffffff</color>
     <color name="test">#64151e29</color>
     <color name="transparent">#00ffffff</color>
+    <color name="error">#FF0000</color>
 
 </resources>

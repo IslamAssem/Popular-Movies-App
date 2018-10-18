@@ -9,10 +9,17 @@ import com.google.gson.annotations.SerializedName;
 @Entity(tableName = "reviews")
 public class Review {
 
-    @NonNull
+	public Review() {
+		movie_id=-1;
+	}
+
+	@NonNull
     @PrimaryKey
     @SerializedName("id")
     private String id;
+
+	@SerializedName("movie_id")
+    private int movie_id;
 	@SerializedName("author")
 	private String author;
 
@@ -53,6 +60,14 @@ public class Review {
 
 	public String getUrl(){
 		return url;
+	}
+
+	public int getMovie_id() {
+		return movie_id;
+	}
+
+	public void setMovie_id(int movie_id) {
+		this.movie_id = movie_id;
 	}
 
 	@Override

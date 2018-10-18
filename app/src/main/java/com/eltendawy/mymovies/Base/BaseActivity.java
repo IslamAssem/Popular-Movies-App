@@ -2,8 +2,10 @@ package com.eltendawy.mymovies.Base;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -30,8 +32,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     private int main_fragment_container;
     protected Fragment quran, ahadith, radio;
     public static final String MOVIE_KEY = "movie";
-    private String sort;
+    private static String sort;
+    public static boolean includeAdult;
     Snackbar snackbar;
+    public final static String sharedKeyAdult="adult";
 
     Toast toast;
 
@@ -40,12 +44,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void setSort(String sort) {
-        this.sort = sort;
+        BaseActivity.sort = sort;
     }
 
     public BaseActivity() {
         activity = this;
         main_fragment_container = -1;
+        includeAdult=false;
     }
 
     @Override
@@ -96,14 +101,39 @@ public abstract class BaseActivity extends AppCompatActivity {
         {
         }
     }
-    public void resetState(EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener, Status status) {
+    public void resetState(EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener) {
 
         try{
-            status = Status.ERROR;
             hideSnackbar();
             endlessRecyclerViewScrollListener.resetState();
         }catch (Exception ignored){
         }
     }
+    public static final String sharedPreferencesName= "MyMoviesSetting";
+    public void  SaveSharedPrefrences(String key,String value) {
 
+        //save to value with the key in SharedPreferences
+        SharedPreferences.Editor editor
+                =getSharedPreferences(sharedPreferencesName,MODE_PRIVATE).edit();
+        editor.putString(key,value);
+        editor.apply();
+    }
+    public String getSharedPrefrences(String key,String defValue){
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(sharedPreferencesName,MODE_PRIVATE);
+        return  sharedPreferences.getString(key,defValue);
+    }
+    public void  SaveSharedPrefrences(String key,boolean value) {
+
+        //save to value with the key in SharedPreferences
+        SharedPreferences.Editor editor
+                =getSharedPreferences(sharedPreferencesName,MODE_PRIVATE).edit();
+        editor.putBoolean(key,value);
+        editor.apply();
+    }
+    public boolean getSharedPrefrences(String key,boolean defValue){
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(sharedPreferencesName,MODE_PRIVATE);
+        return  sharedPreferences.getBoolean(key,defValue);
+    }
 }

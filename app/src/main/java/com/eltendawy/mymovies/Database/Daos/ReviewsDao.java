@@ -1,5 +1,6 @@
 package com.eltendawy.mymovies.Database.Daos;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -17,17 +18,9 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
  * m.nabil.fci2015@gmail.com
  */
 @Dao
-public interface ReviewsDao {
+public interface ReviewsDao extends BaseDao<Review>{
 
-    @Query("select * from reviews where id= :id")
-    public List<Review> getReview(String id);
-    @Insert(onConflict = REPLACE)
-    public void AddReview(Review review);
+    @Query("select * from reviews where movie_id= :id")
+    public LiveData<List<Review>> getReviewsByMovieId(int id);
 
-    @Insert(onConflict = REPLACE)
-    public void AddReviews( List<Review> reviews);
-    @Update
-    public void UpdateReview(Review review);
-    @Delete
-    public void DeleteReview(Review review);
 }

@@ -1,5 +1,6 @@
 package com.eltendawy.mymovies.Database.Daos;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -18,16 +19,10 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
  * m.nabil.fci2015@gmail.com
  */
 @Dao
-public interface TrailersDao {
+public interface TrailersDao extends BaseDao<Trailer>{
 
     @Query("select * from trailes where id = :id")
-    public Trailer getTrailer(String id);
-    @Insert(onConflict = REPLACE)
-    public void AddTrailer(Trailer trailer);
-    @Insert(onConflict = REPLACE)
-    public void AddTrailers(List<Trailer> trailers);
-    @Update
-    public void UpdateTrailer(Trailer trailer);
-    @Delete
-    public void DeleteTrailer(Trailer trailer);
+    public LiveData<Trailer> getTrailerById(String id);
+    @Query("select * from trailes where movie_id = :id")
+    public LiveData<List<Trailer>> getTrailersByMovieId(int id);
 }

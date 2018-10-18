@@ -44,11 +44,14 @@
     <string name="closeDrawer">close_drawer</string>
     <string name="rating">rating</string>
 
-    <string name="poster_size" translatable="false">w185</string>
-    <string name="backdrop_size" translatable="false">w500</string>
     <string name="offline">offline</string>
     <string name="retry">Retry</string>
     <string name="trailers_list_not_loaded">Trailers List not Loaded</string>
     <string name="reviews_list_not_loaded">Reviews List not loaded</string>
     <string name="trailers_reviews_loading_error">Trailers and Reviews loading error!</string>
+
+    <string name="poster_size" translatable="false">w185</string>
+    <string name="backdrop_size" translatable="false">w500</string>
+    <string name="reading_database">Reading from Database</string>
+    <string name="ok">ok</string>
 </resources>

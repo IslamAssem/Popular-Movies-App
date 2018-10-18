@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.eltendawy.mymovies.Activities.MovieDetails;
 import com.eltendawy.mymovies.Api.APIManager;
 import com.eltendawy.mymovies.Api.Models.Movie;
-import com.eltendawy.mymovies.Api.configuration;
 import com.eltendawy.mymovies.R;
 import com.eltendawy.mymovies.interfaces.OnItemCLickListener;
 import com.squareup.picasso.Picasso;
@@ -45,12 +44,19 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<MoviesRecyclerAd
 
     public void setMovies(List<Movie> movies) {
         this.movies.clear();
-        this.movies.addAll(movies);
+        if(movies!=null)
+            this.movies.addAll(movies);
         notifyDataSetChanged();
     }
 
     public ArrayList<Movie> getMovies() {
         return movies;
+    }
+
+    public Movie getMovie(int position) {
+        if(position>movies.size()-1)
+            return null;
+        return movies.get(position);
     }
 
     public void addMovie(Movie movie) {

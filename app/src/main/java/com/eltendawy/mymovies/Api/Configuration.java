@@ -1,6 +1,6 @@
 package com.eltendawy.mymovies.Api;
 
-public class configuration {
+public class Configuration {
     public static final String Favourite="Favourite";
     public static final String[]
             posterSizes = {

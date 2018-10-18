@@ -6,17 +6,14 @@
     <group android:checkableBehavior="none" android:id="@+id/show_movies">
         <item
             android:id="@+id/nav_popular"
-            android:icon="@drawable/ic_menu_camera"
             android:title="@string/most_popular"
             android:contentDescription="@string/menu_popular"/>
         <item
             android:id="@+id/nav_top_rated"
-            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/top_rated"
             android:contentDescription="@string/menu_top_rated"/>
         <item
             android:id="@+id/nav_upcoming"
-            android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/upcoming" />
         <item android:title="@string/favourite">
                 <item
@@ -32,7 +29,7 @@
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_share_white_24dp"
                 android:title="Share" />
         </menu>
     </item>

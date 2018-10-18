@@ -2,7 +2,6 @@ package com.eltendawy.mymovies.Activities;
 
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,33 +18,38 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.eltendawy.mymovies.Adapters.EndlessRecyclerViewScrollListener;
 import com.eltendawy.mymovies.Adapters.MoviesRecyclerAdapter;
 import com.eltendawy.mymovies.Api.APIManager;
+import com.eltendawy.mymovies.Api.Configuration;
 import com.eltendawy.mymovies.Api.Models.Movie;
 import com.eltendawy.mymovies.Api.Models.MoviesResponse;
-import com.eltendawy.mymovies.Api.configuration;
 import com.eltendawy.mymovies.Base.BaseActivity;
 import com.eltendawy.mymovies.Base.Status;
 import com.eltendawy.mymovies.Database.MoviesDatabase;
+import com.eltendawy.mymovies.Fragments.SearchDialog;
 import com.eltendawy.mymovies.R;
 import com.eltendawy.mymovies.interfaces.OnItemCLickListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.eltendawy.mymovies.Base.Status.ERROR;
 import static com.eltendawy.mymovies.Base.Status.FINISHED;
 import static com.eltendawy.mymovies.Base.Status.IDLE;
 import static com.eltendawy.mymovies.Base.Status.LOADING;
 
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnItemCLickListener, Callback<MoviesResponse> {
     private Snackbar snackbar;
     int page;
     GridLayoutManager manager;
@@ -55,50 +59,107 @@ public class MainActivity extends BaseActivity
     CoordinatorLayout parentLayout;
     EndlessRecyclerViewScrollListener endlessRecyclerViewScrollListener;
     MoviesDatabase db;
-
-    /*, menueRecycler;
-    FloatingActionButton fabsearch;
-    private NavigationView navigationView;
-    private DrawerLayout drawer;
-    private ImageView menuim, DialogRefresh;
-    private TextView DialogError_message;
-    //private MenuAdapter menuAdapter;
-    private Toolbar toolbar;
-    private ArrayList<Movie> MovieList;
-    //private ArrayList<com.eltendawy.popularmoviesapp.Models.MenuItem> menuList;*/
+    ImageView navBackdrop, navPoster;
+    TextView navTitle;
+    int randomPosition;
+    SearchDialog dialog;
+    boolean isSearching;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab_search);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                try
+                {
+                    if(getSupportFragmentManager()!=null)
+                        if(getSupportFragmentManager().findFragmentByTag(dialog.TAG)==null)
+                            dialog.show(getSupportFragmentManager(),dialog.TAG);
+                        else dialog.dismiss();
+                }catch (Exception ignored){
+                }
+
             }
         });
+        intiNavigationLayout();
+        initViews();
+        fetchMovies();
+    }
 
+    private void intiNavigationLayout() {
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View view, float v) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View view) {
+                randomPosition=-1;
+                if (mAdapter.getItemCount() == 0) return;
+                randomPosition = new Random().nextInt(mAdapter.getItemCount());
+                Movie movie = mAdapter.getMovie(randomPosition);
+                if (movie == null)
+                    return;
+                if (movie.getPosterPath() == null || movie.getPosterPath().equals("") || movie.getPosterPath().equals("null"))
+                    movie.setPosterPath("");
+                if (movie.getBackdropPath() == null || movie.getBackdropPath().equals("") || movie.getBackdropPath().equals("null"))
+                    movie.setBackdropPath(movie.getPosterPath());
+                navTitle.setText(movie.getTitle());
+                Picasso.with(context_application).load(
+                        APIManager.IMAGES_URL.concat(getResources().getString(R.string.poster_size)).concat(movie.getBackdropPath()
+                        )).
+                        into(navBackdrop);
+                Picasso.with(context_application).load(
+                        APIManager.IMAGES_URL.concat(getResources().getString(R.string.poster_size)).concat(movie.getPosterPath()
+                        )).
+                        into(navPoster);
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View view) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int i) {
+
+            }
+        });
         NavigationView navigationView = findViewById(R.id.nav_view);
+        View header=navigationView.getHeaderView(0);
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(randomPosition!=-1)
+                MainActivity.this.onClick(mAdapter.getMovie(randomPosition),v,randomPosition);
+            }
+        });
+        navBackdrop = header.findViewById(R.id.nav_backdrop);
+        navPoster = header.findViewById(R.id.nav_poster);
+        navTitle = header.findViewById(R.id.nav_title);
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
-        initViews();
-        fetchMovies();
     }
 
     private void initViews() {
         page = 1;
+        randomPosition=-1;
+        isSearching=false;
+        dialog=new SearchDialog().setParent(this);
         db = MoviesDatabase.getInstance(context_application);
-        setSort(configuration.discoverSort[1]);
+        setSort(Configuration.discoverSort[1]);
         status = Status.IDLE;//used to stop page skipping as making many request increase page integer;
         parentLayout = findViewById(R.id.parent_layout);
         recycler = findViewById(R.id.recycler);
@@ -108,25 +169,21 @@ public class MainActivity extends BaseActivity
         endlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener(manager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (!getSort().equals(configuration.Favourite))
+                if (!getSort().equals(Configuration.Favourite))
                     fetchMovies();
             }
         };
-        mAdapter.setOnItemCLickListener(new OnItemCLickListener() {
-            @Override
-            public void onClick(Object data, View view, int position) {
-                Intent intent = new Intent(activity, MovieDetails.class);
-                intent.putExtra(MOVIE_KEY, (Movie) data);
-                startActivity(intent);
-            }
-        });
+        mAdapter.setOnItemCLickListener(this);
         recycler.setAdapter(mAdapter);
         recycler.addOnScrollListener(endlessRecyclerViewScrollListener);
+        includeAdult=getSharedPrefrences(BaseActivity.sharedKeyAdult,false);
     }
 
-    private void fetchMovies() {
-        showSnackbarLoading(R.string.retrying_connecting, recycler);
-        if (getSort().equals(configuration.Favourite)) {
+    public void fetchMovies() {
+        if(status==ERROR)
+            showSnackbarLoading(R.string.retrying_connecting, recycler);
+        else if(!getSort().equals(Configuration.Favourite)) showSnackbarLoading(R.string.connecting, recycler);
+        else {
             db.movieDao().getAllMovies().observe(this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies) {
@@ -138,32 +195,30 @@ public class MainActivity extends BaseActivity
         }
         if (status == FINISHED || status == LOADING)
             return;
-        APIManager.getAPIS().getMoviesList(APIManager.APIKEY, getSort(), page++, true).enqueue(new Callback<MoviesResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
-                status = IDLE;
-                hideSnackbar();
-                try {
-                    if (response.body() != null) {
-                        mAdapter.addMovie(response.body().getResults());
-                        if (response.body().getTotalPages() < page)
-                            status = FINISHED;
-                    }
-                } catch (Exception ignored) {
-                    showSnackbar();
-                }
-            }
+        if(isSearching)
+            APIManager.getAPIS().searchmovie(APIManager.APIKEY, getSort(), page++, includeAdult).enqueue(this);
 
-            @Override
-            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
-                //TODO handle failure
-                showSnackbar();
-            }
-        });
+        else
+            APIManager.getAPIS().getMoviesList(APIManager.APIKEY, getSort(), page++, includeAdult).enqueue(this);
+
+    }
+
+
+    public void fetchMovies(String keyword) {
+        page=1;
+        status=LOADING;
+        isSearching=true;
+        setSort(keyword);
+        resetState(endlessRecyclerViewScrollListener);
+        showSnackbarLoading(R.string.connecting,recycler);
+        mAdapter.setMovies(null);
+        APIManager.getAPIS().searchmovie(APIManager.APIKEY, getSort(), page++, includeAdult).enqueue(this);
     }
 
     public void showSnackbar() {
-        resetState(endlessRecyclerViewScrollListener, status);
+
+        status = ERROR;
+        resetState(endlessRecyclerViewScrollListener);
         snackbar = Snackbar
                 .make(recycler, R.string.error_connecting, Snackbar.LENGTH_INDEFINITE)
                 .setAction(getResources().getString(R.string.retry), new View.OnClickListener() {
@@ -173,11 +228,11 @@ public class MainActivity extends BaseActivity
                     }
                 });
         // Changing message text color
-        snackbar.setActionTextColor(Color.BLUE);
+        snackbar.setActionTextColor(getResources().getColor(R.color.white));
         // Changing action button text color
         View sbView = snackbar.getView();
         TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
+        textView.setTextColor(getResources().getColor(R.color.error));
         snackbar.show();
     }
 
@@ -206,11 +261,24 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_include_adult) {
+            includeAdult=!includeAdult;
+            SaveSharedPrefrences(BaseActivity.sharedKeyAdult,includeAdult);
+            item.setChecked(includeAdult);
+            mAdapter.resetMovies();
+            page=1;
+            status=IDLE;
+            fetchMovies();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_include_adult).setChecked(includeAdult);
+        return true;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -218,40 +286,42 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        isSearching=false;
         switch (id) {
             case R.id.nav_popular: {
-                if (getSort().equals(configuration.discoverSort[1]))
+                if (getSort().equals(Configuration.discoverSort[1]))
                     break;
                 mAdapter.resetMovies();
                 page = 1;
-                setSort(configuration.discoverSort[1]);
+                setSort(Configuration.discoverSort[1]);
                 fetchMovies();
                 break;
             }
             case R.id.nav_top_rated: {
-                if (getSort().equals(configuration.discoverSort[3]))
+                if (getSort().equals(Configuration.discoverSort[3]))
                     break;
                 mAdapter.resetMovies();
                 page = 1;
-                setSort(configuration.discoverSort[3]);
+                setSort(Configuration.discoverSort[3]);
                 fetchMovies();
                 break;
             }
             case R.id.nav_upcoming: {
-                if (getSort().equals(configuration.discoverSort[5]))
+                if (getSort().equals(Configuration.discoverSort[5]))
                     break;
                 mAdapter.resetMovies();
                 page = 1;
-                setSort(configuration.discoverSort[5]);
+                setSort(Configuration.discoverSort[5]);
                 fetchMovies();
                 break;
             }
             case R.id.nav_favourite: {
-                if (getSort().equals(configuration.Favourite))
+                if (getSort().equals(Configuration.Favourite))
                     break;
+                status=IDLE;
                 mAdapter.resetMovies();
                 page = 1;
-                setSort(configuration.Favourite);
+                setSort(Configuration.Favourite);
                 fetchMovies();
                 break;
             }
@@ -262,5 +332,34 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(Object data, View view, int position) {
+        Intent intent = new Intent(activity, MovieDetails.class);
+        intent.putExtra(MOVIE_KEY, (Movie) data);
+        startActivity(intent);
+
+    }
+
+    @Override
+    public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+        status = IDLE;
+        hideSnackbar();
+        try {
+            if (response.body() != null) {
+                mAdapter.addMovie(response.body().getResults());
+                if (response.body().getTotalPages() < page)
+                    status = FINISHED;
+            }
+        } catch (Exception ignored) {
+            showSnackbar();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<MoviesResponse> call, Throwable t) {
+
+        showSnackbar();
     }
 }
