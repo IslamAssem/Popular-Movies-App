@@ -19,7 +19,7 @@ public class RoomQueriesThread extends AsyncTask<Movie,Void,Movie> {
     }
 
     public RoomQueriesThread CreateDB(Context context) {
-        db=MoviesDatabase.getInstance(context);
+        db=MoviesDatabase.getInstance();
         return this;
     }
 

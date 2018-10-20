@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity
         randomPosition=-1;
         isSearching=false;
         dialog=new SearchDialog().setParent(this);
-        db = MoviesDatabase.getInstance(context_application);
+        db = MoviesDatabase.getInstance();
         setSort(Configuration.discoverSort[1]);
         status = Status.IDLE;//used to stop page skipping as making many request increase page integer;
         parentLayout = findViewById(R.id.parent_layout);
@@ -343,7 +343,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+    public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
         status = IDLE;
         hideSnackbar();
         try {
@@ -358,7 +358,7 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void onFailure(Call<MoviesResponse> call, Throwable t) {
+    public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
 
         showSnackbar();
     }

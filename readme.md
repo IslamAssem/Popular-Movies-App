@@ -8,6 +8,9 @@ i have used external libraries like  retrofit library to connect to TMDB API to 
 i have used shared prefrences for storing setting and sqLite for storing data.
 i use Room library for connecting with database.
 
-![this is the main activity of the app](https://picasaweb.google.com/101675018750365153474/6613711134107576513#6613711133970445314)
-movie details
-(https://picasaweb.google.com/101675018750365153474/6613710823521338193#6613710826033129138)
+<img src="/screenshots/main activity.png" height="400px"/> 
+<img src="/screenshots/navigation layout.png" height="400px"/>
+<img src="/screenshots/context menu.png" height="400px"/>
+<img src="/screenshots/movie details.png" height="400px"/>
+<img src="/screenshots/reviews fragment.png" height="400px"/>
+<img src="/screenshots/trailres fragment.png" height="400px"/>

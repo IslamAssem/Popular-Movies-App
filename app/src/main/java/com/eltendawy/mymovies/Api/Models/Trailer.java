@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "trailes")
+@Entity
 public class Trailer {
 
 	public Trailer() {

@@ -1,8 +1,12 @@
 package com.eltendawy.mymovies.Database.Daos;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
+
+import com.eltendawy.mymovies.Api.Models.Movie;
 
 import java.util.List;
 
@@ -18,4 +22,9 @@ public interface  BaseDao<T>{
     //public void Update(T model);
     @Delete
     void Delete(T model);
+    @Update
+    void Update(T model);
+
+
+
 }

@@ -20,7 +20,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface ReviewsDao extends BaseDao<Review>{
 
-    @Query("select * from reviews where movie_id= :id")
+    @Query("select * from Review where movie_id= :id")
     public LiveData<List<Review>> getReviewsByMovieId(int id);
 
 }

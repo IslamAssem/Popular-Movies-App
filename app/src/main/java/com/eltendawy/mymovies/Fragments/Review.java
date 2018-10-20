@@ -68,6 +68,10 @@ public class Review extends BaseFragment {
         this.page = page;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -110,7 +114,6 @@ public class Review extends BaseFragment {
         switch (status)
         {
             case FINISHED: {
-                parentActivity.setReviewStatus(status);
                 return;
             }
             case LOADING: {
@@ -125,7 +128,7 @@ public class Review extends BaseFragment {
                 {
                     if(tryOnline)
                         break;
-                    MoviesDatabase.getInstance(parentActivity.getApplicationContext()).reviewsDao().
+                    MoviesDatabase.getInstance().reviewsDao().
                             getReviewsByMovieId(movie.getId()).observe(this, new Observer<List<com.eltendawy.mymovies.Api.Models.Review>>() {
                         @Override
                         public void onChanged(@Nullable List<com.eltendawy.mymovies.Api.Models.Review> reviews) {
@@ -163,7 +166,6 @@ public class Review extends BaseFragment {
                         if(response.body().getTotalPages()<page)
                         {
                             status=FINISHED;
-                            parentActivity.setReviewStatus(status);
                         }
                     }
                 } catch (Exception e) {

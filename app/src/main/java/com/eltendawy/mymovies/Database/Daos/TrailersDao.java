@@ -21,8 +21,8 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface TrailersDao extends BaseDao<Trailer>{
 
-    @Query("select * from trailes where id = :id")
+    @Query("select * from Trailer where id = :id")
     public LiveData<Trailer> getTrailerById(String id);
-    @Query("select * from trailes where movie_id = :id")
+    @Query("select * from Trailer where movie_id = :id")
     public LiveData<List<Trailer>> getTrailersByMovieId(int id);
 }

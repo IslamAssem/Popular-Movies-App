@@ -19,8 +19,8 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface MovieDao extends BaseDao<Movie>{
 
-    @Query("select * from movies")
+    @Query("select * from Movie")
     public LiveData<List<Movie>> getAllMovies();
-    @Query("select * from movies where id=:id")
+    @Query("select * from Movie where id=:id")
     public LiveData<Movie> getMovie(int id);
 }

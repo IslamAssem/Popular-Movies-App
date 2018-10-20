@@ -27,14 +27,18 @@ public abstract class MoviesDatabase extends RoomDatabase{
     public abstract ReviewsDao reviewsDao();
     public abstract TrailersDao trailersDao();
 
-    public static MoviesDatabase getInstance(Context context){
-        if(myDataBase==null)//initialize
-            myDataBase= Room.databaseBuilder(context.getApplicationContext(),
-                    MoviesDatabase.class, "myMoviesDB")
-                    .build();
+    public static void setInstance(Context context){
+        myDataBase= Room.databaseBuilder(context.getApplicationContext(),
+                MoviesDatabase.class, "myMoviesDB")
+                .build();
 
-            return myDataBase;
     }
+
+    public static MoviesDatabase getInstance(){
+
+        return myDataBase;
+    }
+
 
 
 

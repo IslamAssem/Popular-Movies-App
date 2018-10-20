@@ -21,6 +21,8 @@ import com.eltendawy.mymovies.Api.APIManager;
 import com.eltendawy.mymovies.Api.Models.Movie;
 import com.eltendawy.mymovies.Base.BaseActivity;
 import com.eltendawy.mymovies.Base.Status;
+import com.eltendawy.mymovies.Database.DeleteAsync;
+import com.eltendawy.mymovies.Database.InsertAsync;
 import com.eltendawy.mymovies.Database.MoviesDatabase;
 import com.eltendawy.mymovies.Fragments.Overview;
 import com.eltendawy.mymovies.Fragments.Review;
@@ -43,25 +45,15 @@ public class MovieDetails extends BaseActivity {
     Snackbar snackbar;
     static Status status;
     FloatingActionButton fabFavourite;
-    Status reviewStatus, trailerStatus;
     boolean isDbBusy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
-        db=MoviesDatabase.getInstance(context_application);
+        db=MoviesDatabase.getInstance();
         initViews();
-
     }
-    public void setReviewStatus(Status reviewStatus) {
-        this.reviewStatus = reviewStatus;
-    }
-
-    public void setTrailerStatus(Status trailerStatus) {
-        this.trailerStatus = trailerStatus;
-    }
-
     public void setMovie(Movie movie) {
         if(movie.isFavourite())
         this.movie.setFavourite(movie.isFavourite());
@@ -70,8 +62,6 @@ public class MovieDetails extends BaseActivity {
     private void initViews() {
         status = Status.IDLE;
         isDbBusy=false;
-        reviewStatus=Status.IDLE;
-        trailerStatus=Status.IDLE;
         moviewImage = findViewById(R.id.movie_img);
         title = findViewById(R.id.movie_title);
         rating = findViewById(R.id.movie_rating);
@@ -87,57 +77,31 @@ public class MovieDetails extends BaseActivity {
                 if(movie.isFavourite())
                     try
                     {
-                        AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                isDbBusy=true;
-                                db.movieDao().Delete(movie);
-                            }
-                        });
+                        new DeleteAsync<>(movie).execute();
                         fabFavourite.setImageResource(R.drawable.ic_star_normal_24dp);
                         movie.setFavourite(false);
                     }catch (Exception ignored)
                     {
                     }
-                else if(reviewStatus!=Status.LOADING&&trailerStatus!=Status.LOADING)
+                else if(reviewFragment.getStatus()!=Status.LOADING&&trailersFragment.getStatus()!=Status.LOADING)
                 try
                 {
                     movie.setNumerReviews(reviewFragment.totalReviews);
                     movie.setLastReviewsPage(reviewFragment.getPage());
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            db.movieDao().insert(movie);
-                            movie.setFavourite(true);
-                        }
-                    });
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(int i=0;i<reviewFragment.getReviews().size();i++)
-                                reviewFragment.getReviews().get(i).setMovie_id(movie.getId());
-                            db.reviewsDao().insert(reviewFragment.getReviews());
-                        }
-                    });
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(int i=0;i<trailersFragment.getTrailers().size();i++)
-                                trailersFragment.getTrailers().get(i).setMovie_id(movie.getId());
-                            db.trailersDao().insert(trailersFragment.getTrailers());
-                        }
-                    });
-                    fabFavourite.setImageResource(R.drawable.ic_star_favorite_24dp);
                     movie.setFavourite(true);
+                    new InsertAsync<>(movie).execute();
+                    new InsertAsync<>(reviewFragment.getReviews(),movie.getId()).execute();
+                    new InsertAsync<>(trailersFragment.getTrailers(),movie.getId()).execute();
+                    fabFavourite.setImageResource(R.drawable.ic_star_favorite_24dp);
                 }catch (Exception ignored)
                 {
                 }
-                else if(reviewStatus==Status.FINISHED&&trailerStatus!=Status.FINISHED)
+                else if(reviewFragment.getStatus()==Status.FINISHED&&trailersFragment.getStatus()!=Status.FINISHED)
                 {
                     showToast(getResources().getString(R.string.trailers_list_not_loaded),
                             Toast.LENGTH_SHORT);
                 }
-                else if(reviewStatus!=Status.FINISHED&&trailerStatus==Status.FINISHED)
+                else if(reviewFragment.getStatus()!=Status.FINISHED&&trailersFragment.getStatus()==Status.FINISHED)
                 {
                     showToast(getResources().getString(R.string.reviews_list_not_loaded),
                         Toast.LENGTH_SHORT);
@@ -258,4 +222,6 @@ public class MovieDetails extends BaseActivity {
     public View getView() {
         return parent;
     }
+
+
 }

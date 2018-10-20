@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "reviews")
+@Entity
 public class Review {
 
 	public Review() {

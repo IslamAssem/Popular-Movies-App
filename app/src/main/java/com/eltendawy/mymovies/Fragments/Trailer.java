@@ -64,6 +64,9 @@ public class Trailer extends BaseFragment {
 
     }
 
+    public Status getStatus() {
+        return status;
+    }
     public Trailer setMovie(Movie movie) {
         this.movie = movie;
         return this;
@@ -89,7 +92,6 @@ public class Trailer extends BaseFragment {
         switch (status)
         {
             case FINISHED: {
-                parentActivity.setTrailerStatus(status);
                 return;
             }
             case LOADING: {
@@ -104,7 +106,7 @@ public class Trailer extends BaseFragment {
                 {
                     if(tryOnline)
                         break;
-                    MoviesDatabase.getInstance(parentActivity.getApplicationContext()).trailersDao().
+                    MoviesDatabase.getInstance().trailersDao().
                             getTrailersByMovieId(movie.getId()).observe(this, new Observer<List<com.eltendawy.mymovies.Api.Models.Trailer>>() {
                         @Override
                         public void onChanged(@Nullable List<com.eltendawy.mymovies.Api.Models.Trailer> trailers) {
@@ -134,7 +136,6 @@ public class Trailer extends BaseFragment {
                         if(response.body().getResults().size()==adapter.getItemCount())
                         {
                             status=FINISHED;
-                            parentActivity.setTrailerStatus(status);
                         }
                     }
                 }catch (Exception e)

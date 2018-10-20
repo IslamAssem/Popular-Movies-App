@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
-@Entity (tableName = "movies")
+@Entity
 public class Movie implements Parcelable {
 
     public static final String TAG="Movie";
